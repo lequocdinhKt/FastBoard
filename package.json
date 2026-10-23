@@ -9,8 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run",
-    "seed:auth": "node scripts/seed-auth-users.mjs"
+    "test:run": "vitest run"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.90.1",

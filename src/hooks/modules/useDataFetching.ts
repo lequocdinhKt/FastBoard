@@ -5,6 +5,7 @@ import { supabase } from '../../services/supabaseClient';
 import { Task, Project, User, Notification } from '../../types';
 
 
+/** Quản lý local state và tải dữ liệu nghiệp vụ sau khi người dùng đăng nhập. */
 export const useDataFetching = (
   isAuth: boolean, 
   user: User, 
@@ -18,6 +19,7 @@ export const useDataFetching = (
   const [notifications, setNotifications] = useState<Notification[]>([]);
 
   
+  /** Tải người dùng, dự án, thành viên dự án, công việc và thông báo từ Supabase. */
   const fetchData = async () => {
     setIsLoading(true);
     try {
@@ -124,6 +126,7 @@ export const useDataFetching = (
   };
 
   
+  /** Tự động tải lại dữ liệu khi phiên đăng nhập hoặc người dùng hiện tại thay đổi. */
   useEffect(() => {
     if (isAuth && user.id) {
       fetchData();

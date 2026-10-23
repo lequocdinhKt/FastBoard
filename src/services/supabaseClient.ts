@@ -10,6 +10,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 
+/** Thực thi thao tác Auth theo giao diện lock mà Supabase yêu cầu. */
 const authLock = async <R>(
   _name: string,
   _acquireTimeout: number,
@@ -17,6 +18,7 @@ const authLock = async <R>(
 ): Promise<R> => fn()
 
 
+/** Client Supabase dùng chung cho Auth, database, Realtime và Edge Functions. */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     persistSession: true,

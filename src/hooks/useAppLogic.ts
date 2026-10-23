@@ -11,6 +11,7 @@ import { useSearchSystem } from './modules/useSearchSystem';
 import { useEntityOperations } from './modules/useEntityOperations';
 
 
+/** Chuyển một bản ghi `users` từ Supabase sang kiểu User dùng trong ứng dụng. */
 const mapProfile = (row: Record<string, unknown>): User => ({
   id: String(row.id),
   name: String(row.name ?? ''),
@@ -21,6 +22,7 @@ const mapProfile = (row: Record<string, unknown>): User => ({
 });
 
 
+/** Chuyển một bản ghi `notifications` từ Supabase sang kiểu Notification của ứng dụng. */
 const mapNotification = (row: Record<string, unknown>): Notification => ({
   id: String(row.id),
   userId: String(row.user_id),
@@ -33,6 +35,7 @@ const mapNotification = (row: Record<string, unknown>): Notification => ({
 });
 
 
+/** Ghép trạng thái, dữ liệu, xác thực và các thao tác nghiệp vụ thành API chung của ứng dụng. */
 export const useAppLogic = () => {
   const [isAuth, setIsAuth] = useState<boolean>(false);
   const [authReady, setAuthReady] = useState<boolean>(false);
@@ -48,6 +51,7 @@ export const useAppLogic = () => {
   );
 
   
+  /** Tải hồ sơ public của tài khoản Auth và cập nhật người dùng hiện tại. */
   const loadProfile = async (authUserId: string, email?: string | null) => {
     const { data: profile, error } = await supabase
       .from('users')
@@ -73,10 +77,12 @@ export const useAppLogic = () => {
   };
 
   
+  /** Khôi phục phiên đăng nhập và lắng nghe các thay đổi trạng thái Auth. */
   useEffect(() => {
     let mounted = true;
 
     
+    /** Khởi tạo trạng thái xác thực từ session đang được lưu. */
     const init = async () => {
       const { data: sessionData } = await supabase.auth.getSession();
       const session = sessionData.session;
@@ -111,6 +117,7 @@ export const useAppLogic = () => {
   }, []);
 
   
+  /** Đồng bộ thông báo thời gian thực của người dùng hiện tại từ Supabase Realtime. */
   useEffect(() => {
     if (!isAuth || !user.id) return;
 
@@ -145,6 +152,7 @@ export const useAppLogic = () => {
   }, [isAuth, user.id]);
 
   
+  /** Đăng nhập bằng email/mật khẩu rồi tải hồ sơ tương ứng. */
   const handleLogin = async (email: string, password: string): Promise<boolean> => {
     const { data: signInData, error } = await supabase.auth.signInWithPassword({
       email: email.trim(),
@@ -159,6 +167,7 @@ export const useAppLogic = () => {
   };
 
   
+  /** Đăng xuất và đưa trạng thái ứng dụng về người dùng khách. */
   const handleLogout = async () => {
     await supabase.auth.signOut();
     setIsAuth(false);
@@ -166,6 +175,7 @@ export const useAppLogic = () => {
   };
 
   
+  /** Lưu công việc và đóng biểu mẫu khi thao tác thành công. */
   const handleTaskSaveWrapper = async (task: Task) => {
     const success = await ops.handleTaskSave(task, !!ui.state.editingTask);
     if (success) {
@@ -175,6 +185,7 @@ export const useAppLogic = () => {
   };
 
   
+  /** Xóa công việc và đóng biểu mẫu khi thao tác thành công. */
   const handleTaskDeleteWrapper = async (taskId: string) => {
     const success = await ops.handleTaskDelete(taskId);
     if (success) {
@@ -184,6 +195,7 @@ export const useAppLogic = () => {
   };
 
   
+  /** Lưu dự án và đặt lại trạng thái chỉnh sửa khi thành công. */
   const handleProjectSaveWrapper = async (project: Project) => {
     const success = await ops.handleProjectSave(project, !!ui.state.editingProject);
     if (success) {
@@ -193,6 +205,7 @@ export const useAppLogic = () => {
   };
 
   
+  /** Xóa dự án và bỏ lựa chọn hiện tại nếu dự án đang mở bị xóa. */
   const handleProjectDeleteWrapper = async (projectId: string) => {
     const success = await ops.handleProjectDelete(projectId);
     if (success && ui.state.selectedProject?.id === projectId) {
@@ -201,6 +214,7 @@ export const useAppLogic = () => {
   };
 
   
+  /** Lưu thông tin thành viên và đóng biểu mẫu khi thành công. */
   const handleMemberSaveWrapper = async (member: User) => {
     const success = await ops.handleMemberSave(member, !!ui.state.editingMember);
     if (success) {
@@ -210,12 +224,14 @@ export const useAppLogic = () => {
   };
 
   
+  /** Đánh dấu một thông báo đã đọc ở local state và database. */
   const markNotificationAsRead = async (id: string) => {
     data.setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
     await supabase.from('notifications').update({ read: true }).eq('id', id);
   };
 
   
+  /** Đánh dấu toàn bộ thông báo của người dùng hiện tại đã đọc. */
   const markAllNotificationsAsRead = async () => {
     data.setNotifications(prev => prev.map(n => ({ ...n, read: true })));
     await supabase.from('notifications').update({ read: true }).eq('user_id', user.id);
@@ -238,6 +254,7 @@ export const useAppLogic = () => {
       handleTaskSave: handleTaskSaveWrapper,
       handleTaskDelete: handleTaskDeleteWrapper,
       
+      /** Cập nhật trạng thái công việc theo kiểu optimistic rồi đồng bộ xuống database. */
       handleUpdateTaskStatus: (id: string, s: TaskStatus) => {
           const existing = data.tasks.find(t => t.id === id);
           const completedAt = s === TaskStatus.DONE
@@ -247,12 +264,14 @@ export const useAppLogic = () => {
           ops.handleUpdateTaskStatus(id, s, completedAt);
       },
       
+      /** Chuẩn bị trạng thái để tạo công việc mới với cột Kanban mặc định. */
       openNewTaskModal: (status?: TaskStatus) => {
           ui.actions.setEditingTask(null);
           ui.actions.setNewTaskStatus(status || TaskStatus.TODO);
           ui.actions.setTaskModalOpen(true);
       },
       
+      /** Chọn công việc cần sửa và mở biểu mẫu chỉnh sửa. */
       openEditTaskModal: (task: Task) => {
           ui.actions.setEditingTask(task);
           ui.actions.setTaskModalOpen(true);
@@ -260,17 +279,26 @@ export const useAppLogic = () => {
 
       handleProjectSave: handleProjectSaveWrapper,
       handleProjectDelete: handleProjectDeleteWrapper,
+      /** Xóa dự án đang chỉnh sửa và mở biểu mẫu tạo dự án mới. */
       openNewProjectModal: () => { ui.actions.setEditingProject(null); ui.actions.setProjectModalOpen(true); },
+      /** Chọn dự án cần sửa và mở biểu mẫu chỉnh sửa. */
       openEditProjectModal: (p: Project) => { ui.actions.setEditingProject(p); ui.actions.setProjectModalOpen(true); },
+      /** Mở trang chi tiết của dự án được chọn. */
       handleProjectClick: (p: Project) => { ui.actions.setSelectedProject(p); ui.actions.setActiveTab('projects'); },
+      /** Bỏ dự án đang chọn để quay về danh sách dự án. */
       handleBackToProjects: () => ui.actions.setSelectedProject(null),
 
+      /** Chuyển yêu cầu cập nhật hồ sơ tới lớp thao tác dữ liệu. */
       handleProfileUpdate: (u: User) => ops.handleProfileUpdate(u),
       handleMemberSave: handleMemberSaveWrapper,
       handleDeleteMember: ops.handleDeleteMember,
+      /** Xóa thành viên đang chỉnh sửa và mở biểu mẫu thêm thành viên. */
       openNewMemberModal: () => { ui.actions.setEditingMember(null); ui.actions.setMemberModalOpen(true); },
+      /** Chọn thành viên cần sửa và mở biểu mẫu chỉnh sửa. */
       openEditMemberModal: (m: User) => { ui.actions.setEditingMember(m); ui.actions.setMemberModalOpen(true); },
+      /** Mở trang chi tiết của thành viên được chọn. */
       handleMemberClick: (m: User) => { ui.actions.setSelectedMember(m); ui.actions.setActiveTab('team'); },
+      /** Bỏ thành viên đang chọn để quay về danh sách nhóm. */
       handleBackToTeam: () => ui.actions.setSelectedMember(null),
 
       setFilters: search.setFilters,

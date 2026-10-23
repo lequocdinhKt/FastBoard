@@ -6,6 +6,7 @@ import { generateSubtasks, suggestPriority } from '../services/aiService';
 import { useApp } from '../context/AppContext';
 
 
+/** Quản lý dữ liệu nhập và các thao tác nghiệp vụ của biểu mẫu công việc. */
 export const useTaskForm = ({
   isOpen, task, currentUser, projects, defaultStatus, onSave, onDelete
 }: UseTaskFormProps) => {
@@ -26,6 +27,7 @@ export const useTaskForm = ({
   const [activeTab, setActiveTab] = useState<'details' | 'subtasks' | 'comments'>('details');
 
   
+  /** Nạp dữ liệu công việc đang sửa hoặc khởi tạo giá trị mặc định khi mở biểu mẫu. */
   useEffect(() => {
     if (isOpen) {
       if (task) {
@@ -55,6 +57,7 @@ export const useTaskForm = ({
   }, [isOpen, task, defaultStatus, projects, currentUser]);
 
   
+  /** Chuẩn hóa dữ liệu trong biểu mẫu thành Task rồi chuyển cho hàm lưu. */
   const handleSubmit = () => {
     const updatedTask: Task = {
       id: task?.id || Math.random().toString(36).substr(2, 9),
@@ -75,6 +78,7 @@ export const useTaskForm = ({
   };
 
   
+  /** Xác nhận với người dùng trước khi yêu cầu xóa công việc đang sửa. */
   const handleDelete = () => {
     if (task && onDelete && window.confirm("Are you sure you want to delete this task?")) {
       onDelete(task.id);
@@ -82,21 +86,25 @@ export const useTaskForm = ({
   };
 
   
+  /** Thêm một công việc con rỗng vào biểu mẫu. */
   const addSubtask = () => {
     setSubtasks([...subtasks, { id: Math.random().toString(), title: 'New Subtask', completed: false }]);
   };
 
   
+  /** Cập nhật một phần dữ liệu của công việc con theo id. */
   const updateSubtask = (id: string, updates: Partial<Subtask>) => {
     setSubtasks(prev => prev.map(s => s.id === id ? { ...s, ...updates } : s));
   };
 
   
+  /** Xóa công việc con khỏi biểu mẫu theo id. */
   const deleteSubtask = (id: string) => {
     setSubtasks(prev => prev.filter(s => s.id !== id));
   };
 
   
+  /** Tạo bình luận mới từ nội dung đang nhập và gắn người dùng hiện tại. */
   const addComment = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim()) return;
@@ -111,6 +119,7 @@ export const useTaskForm = ({
   };
 
   
+  /** Gọi AI sinh danh sách công việc con từ tiêu đề và mô tả. */
   const handleAISubtasks = async () => {
     if (!title.trim() || isGenerating) return;
 
@@ -133,6 +142,7 @@ export const useTaskForm = ({
   };
 
   
+  /** Gọi AI đề xuất mức ưu tiên phù hợp cho công việc. */
   const handleAIPriority = async () => {
     if (!title.trim() || isGenerating) return;
 

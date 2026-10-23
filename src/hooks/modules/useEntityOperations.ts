@@ -6,6 +6,7 @@ import { Task, Project, User, TaskStatus } from '../../types';
 import { canManageMembers, isAdmin, resolveRoleForProfileUpdate } from '../../utils/roles';
 
 
+/** Cung cấp toàn bộ thao tác ghi dữ liệu cho công việc, dự án, thành viên và hồ sơ. */
 export const useEntityOperations = (
   user: User,
   refetchData: () => void,
@@ -17,6 +18,7 @@ export const useEntityOperations = (
 ) => {
 
   
+  /** Tạo/cập nhật công việc cùng công việc con và bình luận trong Supabase. */
   const handleTaskSave = async (task: Task, isEdit: boolean) => {
     try {
       const completedAt = task.status === TaskStatus.DONE
@@ -73,6 +75,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Xóa một công việc và loại nó khỏi local state. */
   const handleTaskDelete = async (taskId: string) => {
     try {
       const { error } = await supabase.from('tasks').delete().eq('id', taskId);
@@ -88,6 +91,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Ghi trạng thái mới và thời điểm hoàn thành của công việc xuống database. */
   const handleUpdateTaskStatus = async (id: string, status: TaskStatus, completedAt?: string) => {
     try {
       const { error } = await supabase.from('tasks').update({
@@ -103,6 +107,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Thay toàn bộ danh sách thành viên của một dự án bằng danh sách mới. */
   const syncProjectMembers = async (projectId: string, memberIds: string[]) => {
     await supabase.from('project_members').delete().eq('project_id', projectId);
     if (memberIds.length === 0) return;
@@ -115,6 +120,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Tạo/cập nhật dự án, bảo đảm người thao tác thuộc dự án và đồng bộ thành viên. */
   const handleProjectSave = async (project: Project, isEdit: boolean) => {
     try {
         const memberIds = Array.from(new Set([
@@ -155,6 +161,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Xóa dự án và các công việc thuộc dự án khỏi local state. */
   const handleProjectDelete = async (projectId: string) => {
     try {
         const { error } = await supabase.from('projects').delete().eq('id', projectId);
@@ -171,6 +178,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Admin cập nhật hồ sơ thành viên đã tồn tại trong Supabase Auth. */
   const handleMemberSave = async (member: User, isEdit: boolean) => {
     if (!canManageMembers(user)) {
       addToast('error', 'Only admins can manage members');
@@ -222,6 +230,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Admin xóa hồ sơ thành viên, đồng thời chặn thao tác tự xóa chính mình. */
   const handleDeleteMember = async (userId: string) => {
      if (!canManageMembers(user)) {
        addToast('error', 'Only admins can remove members');
@@ -243,6 +252,7 @@ export const useEntityOperations = (
   };
 
   
+  /** Cập nhật hồ sơ với kiểm tra quyền và ngăn thành viên tự nâng vai trò. */
   const handleProfileUpdate = async (updatedUser: User) => {
     try {
       const role = resolveRoleForProfileUpdate(user, updatedUser);

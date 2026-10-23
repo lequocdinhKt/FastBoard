@@ -13,9 +13,11 @@ interface SuggestPriorityResponse {
   error?: string;
 }
 
+/** Chuẩn hóa lỗi từ Edge Function với thông báo dự phòng. */
 const functionError = (fallback: string, error?: string): Error =>
   new Error(error || fallback);
 
+/** Gọi Edge Function để sinh các công việc con và kiểm tra kiểu dữ liệu trả về. */
 export const generateSubtasks = async (
   title: string,
   description: string,
@@ -34,6 +36,7 @@ export const generateSubtasks = async (
   return data.subtasks;
 };
 
+/** Gọi Edge Function để đề xuất mức ưu tiên và xác thực giá trị trả về. */
 export const suggestPriority = async (
   title: string,
   description: string,

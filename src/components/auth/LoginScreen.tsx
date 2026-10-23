@@ -20,7 +20,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, language = 'v
         password: 'Password',
         button: 'Sign in',
         error: 'Invalid email or password',
-        hint: 'Demo accounts — see SETUP.md',
+        hint: 'Demo accounts — see README.md',
       }
     : {
         title: 'Đăng nhập',
@@ -29,7 +29,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, language = 'v
         password: 'Mật khẩu',
         button: 'Đăng nhập',
         error: 'Email hoặc mật khẩu không đúng',
-        hint: 'Tài khoản demo — xem SETUP.md',
+        hint: 'Tài khoản demo — xem README.md',
       };
 
   

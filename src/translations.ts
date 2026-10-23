@@ -163,7 +163,7 @@ export const translations = {
     password: "Password",
     loginButton: "Sign in",
     loginError: "Invalid email or password",
-    demoHint: "Demo product — use accounts from SETUP.md",
+    demoHint: "Demo product — use accounts from README.md",
   },
   
   vi: {
@@ -323,6 +323,6 @@ export const translations = {
     password: "Mật khẩu",
     loginButton: "Đăng nhập",
     loginError: "Email hoặc mật khẩu không đúng",
-    demoHint: "Sản phẩm demo — dùng tài khoản trong SETUP.md",
+    demoHint: "Sản phẩm demo — dùng tài khoản trong README.md",
   }
 };

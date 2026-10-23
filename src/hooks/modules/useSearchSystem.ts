@@ -4,6 +4,7 @@ import { useState, useMemo } from 'react';
 import { Task, FilterState } from '../../types';
 
 
+/** Quản lý điều kiện tìm kiếm và trả về danh sách công việc đã lọc. */
 export const useSearchSystem = (tasks: Task[]) => {
   const [filters, setFilters] = useState<FilterState>({
     search: '',
@@ -12,6 +13,7 @@ export const useSearchSystem = (tasks: Task[]) => {
   });
 
   
+  /** Lọc công việc theo từ khóa, mức ưu tiên và người phụ trách. */
   const filteredTasks = useMemo(() => {
     return tasks.filter(t => {
       const searchMatch = 

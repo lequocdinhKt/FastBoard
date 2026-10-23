@@ -6,6 +6,7 @@ import { STATUS_COLORS } from '../constants';
 import { format } from 'date-fns';
 
 
+/** Trả về ngày mới lùi một số ngày mà không thay đổi đối tượng đầu vào. */
 const subDays = (date: Date, amount: number) => {
     const d = new Date(date);
     d.setDate(d.getDate() - amount);
@@ -13,6 +14,7 @@ const subDays = (date: Date, amount: number) => {
 };
 
 
+/** Tính thời điểm đầu tuần (thứ Hai lúc 00:00). */
 const startOfWeek = (date: Date) => {
     const d = new Date(date);
     const day = d.getDay();
@@ -23,6 +25,7 @@ const startOfWeek = (date: Date) => {
 };
 
 
+/** Tính thời điểm cuối tuần (Chủ nhật lúc 23:59:59). */
 const endOfWeek = (date: Date) => {
     const d = startOfWeek(date);
     d.setDate(d.getDate() + 6);
@@ -31,18 +34,22 @@ const endOfWeek = (date: Date) => {
 };
 
 
+/** Chuyển chuỗi ngày ISO sang đối tượng Date. */
 const parseISO = (str: string) => new Date(str);
 
 
+/** Kiểm tra một ngày có nằm trong khoảng đóng đã cho hay không. */
 const isWithinInterval = (date: Date, interval: { start: Date, end: Date }) => {
     return date.getTime() >= interval.start.getTime() && date.getTime() <= interval.end.getTime();
 };
 
 
+/** Tính dữ liệu biểu đồ, trạng thái và năng suất từ danh sách công việc. */
 export const useDashboardData = (tasks: Task[]) => {
   const [timeRange, setTimeRange] = useState<'weekly' | 'monthly'>('weekly');
   
   
+  /** Đếm công việc theo từng trạng thái cho biểu đồ tổng quan. */
   const statusData = useMemo(() => {
     const counts = {
       [TaskStatus.TODO]: tasks.filter(t => t.status === TaskStatus.TODO).length,
@@ -60,6 +67,7 @@ export const useDashboardData = (tasks: Task[]) => {
   }, [tasks]);
 
   
+  /** Gom số công việc được tạo và đến hạn theo ngày trong khoảng đang chọn. */
   const chartData = useMemo(() => {
     const data = [];
     const days = timeRange === 'weekly' ? 7 : 30;
@@ -93,6 +101,7 @@ export const useDashboardData = (tasks: Task[]) => {
   }, [tasks, timeRange]);
 
   
+  /** Tính tỷ lệ hoàn thành tuần và thời gian hoàn thành trung bình. */
   const productivityStats = useMemo(() => {
     const now = new Date();
     const start = startOfWeek(now);

@@ -190,8 +190,8 @@ begin
     insert into public.notifications (user_id, title, message, type, task_id)
     values (
       new.assignee_id,
-      'Task assigned',
-      'You were assigned to: ' || new.title,
+      'Công việc mới được giao',
+      'Bạn được giao công việc: ' || new.title,
       'ASSIGNMENT',
       new.id
     );
@@ -218,7 +218,7 @@ begin
     insert into public.notifications (user_id, title, message, type, task_id)
     values (
       new.assignee_id,
-      'Status change',
+      'Trạng thái công việc thay đổi',
       new.title || ' → ' || new.status::text,
       'STATUS_CHANGE',
       new.id
@@ -249,8 +249,8 @@ begin
     insert into public.notifications (user_id, title, message, type, task_id)
     values (
       v_assignee,
-      'New comment',
-      'Comment on: ' || coalesce(v_title, new.task_id),
+      'Có bình luận mới',
+      'Bình luận trong công việc: ' || coalesce(v_title, new.task_id),
       'COMMENT',
       new.task_id
     );
@@ -513,10 +513,10 @@ on conflict (id) do update set
   email = excluded.email;
 
 insert into projects (id, name, description, status, progress, created_by) values
-('p1', 'Nova FinTech App', 'Ứng dụng ngân hàng thế hệ mới: bảo mật sinh trắc học và tích hợp crypto.', 'ACTIVE', 75, 'a1111111-1111-4111-8111-111111111111'),
-('p2', 'AI Content Engine', 'Nền tảng SaaS dùng LLM để sinh nội dung marketing tự động.', 'ACTIVE', 45, 'a1111111-1111-4111-8111-111111111111'),
-('p3', 'Website Marketing Q4', 'Làm mới website doanh nghiệp cho mùa lễ hội cuối năm.', 'COMPLETED', 100, 'a2222222-2222-4222-8222-222222222222'),
-('p4', 'Mobile Redesign 2026', 'Thiết kế lại trải nghiệm app di động theo design system mới.', 'ACTIVE', 30, 'a1111111-1111-4111-8111-111111111111');
+('p1', 'Cổng dịch vụ sinh viên', 'Nâng cấp cổng thông tin tập trung cho lịch học, học phí và hồ sơ sinh viên.', 'ACTIVE', 40, 'a1111111-1111-4111-8111-111111111111'),
+('p2', 'Hệ thống quản lý thực tập', 'Theo dõi đơn vị thực tập, đề cương, nhật ký tuần và tiến độ báo cáo.', 'ACTIVE', 25, 'a1111111-1111-4111-8111-111111111111'),
+('p3', 'Chiến dịch tuyển sinh năm 2026', 'Chuẩn bị nội dung, hình ảnh và báo cáo tổng kết cho đợt tuyển sinh năm 2026.', 'COMPLETED', 100, 'a2222222-2222-4222-8222-222222222222'),
+('p4', 'Ứng dụng đặt lịch phòng học', 'Xây dựng quy trình đặt phòng, kiểm tra trùng lịch và thông báo thay đổi.', 'ACTIVE', 25, 'a1111111-1111-4111-8111-111111111111');
 
 insert into project_members (project_id, user_id) values
 ('p1', 'a1111111-1111-4111-8111-111111111111'),
@@ -525,6 +525,7 @@ insert into project_members (project_id, user_id) values
 ('p1', 'a5555555-5555-4555-8555-555555555555'),
 ('p2', 'a1111111-1111-4111-8111-111111111111'),
 ('p2', 'a3333333-3333-4333-8333-333333333333'),
+('p2', 'a4444444-4444-4444-8444-444444444444'),
 ('p2', 'a5555555-5555-4555-8555-555555555555'),
 ('p3', 'a2222222-2222-4222-8222-222222222222'),
 ('p3', 'a3333333-3333-4333-8333-333333333333'),
@@ -534,40 +535,62 @@ insert into project_members (project_id, user_id) values
 ('p4', 'a5555555-5555-4555-8555-555555555555');
 
 insert into tasks (id, project_id, title, description, status, priority, assignee_id, due_date, tags, created_at) values
-('t1', 'p1', 'Biometric Authentication', 'Implement FaceID and TouchID login using React Native Biometrics.', 'DONE', 'HIGH', 'a1111111-1111-4111-8111-111111111111', now() - interval '2 days', ARRAY['Security', 'Mobile'], now() - interval '10 days'),
-('t2', 'p1', 'Transaction History API', 'Optimize the SQL query for retrieving last 1000 transactions.', 'REVIEW', 'HIGH', 'a4444444-4444-4444-8444-444444444444', now() + interval '1 day', ARRAY['Backend', 'Performance'], now() - interval '5 days'),
-('t3', 'p1', 'Dark Mode UI Polish', 'Fix contrast issues on the settings screen in dark mode.', 'TODO', 'LOW', 'a2222222-2222-4222-8222-222222222222', now() + interval '5 days', ARRAY['Design', 'UI'], now() - interval '1 day'),
-('t4', 'p1', 'Crypto Wallet Integration', 'Connect to Coinbase API for real-time balance updates.', 'IN_PROGRESS', 'MEDIUM', 'a5555555-5555-4555-8555-555555555555', now() + interval '7 days', ARRAY['Web3', 'API'], now() - interval '3 days'),
-('t5', 'p2', 'Vector Database Setup', 'Initialize Pinecone index and create embedding generation pipeline.', 'DONE', 'HIGH', 'a1111111-1111-4111-8111-111111111111', now() - interval '5 days', ARRAY['AI', 'Infrastructure'], now() - interval '14 days'),
-('t6', 'p2', 'Prompt Engineering', 'Refine system prompts for blog post generation.', 'IN_PROGRESS', 'HIGH', 'a3333333-3333-4333-8333-333333333333', now() + interval '3 days', ARRAY['AI', 'Product'], now() - interval '4 days'),
-('t7', 'p2', 'Stripe Subscription Flow', 'Implement tiered pricing (Free, Pro, Enterprise) checkout.', 'TODO', 'HIGH', 'a1111111-1111-4111-8111-111111111111', now() + interval '10 days', ARRAY['Payments', 'SaaS'], now()),
-('t8', 'p4', 'Design tokens sync', 'Đồng bộ design tokens giữa Figma và code.', 'IN_PROGRESS', 'MEDIUM', 'a2222222-2222-4222-8222-222222222222', now() + interval '4 days', ARRAY['Design', 'System'], now() - interval '2 days'),
-('t9', 'p4', 'Onboarding flow', 'Xây dựng luồng onboarding 3 bước cho user mới.', 'TODO', 'HIGH', 'a5555555-5555-4555-8555-555555555555', now() + interval '8 days', ARRAY['Frontend', 'UX'], now() - interval '1 day');
+('t1', 'p1', 'Hoàn thiện đăng nhập một lần', 'Kết nối tài khoản sinh viên với hệ thống xác thực tập trung của trường.', 'DONE', 'HIGH', 'a1111111-1111-4111-8111-111111111111', now() - interval '15 days', ARRAY['Bảo mật', 'Tài khoản'], now() - interval '31 days'),
+('t2', 'p1', 'Đồng bộ lịch học cá nhân', 'Hiển thị lịch học theo tuần và tự động cập nhật khi có thay đổi.', 'DONE', 'MEDIUM', 'a5555555-5555-4555-8555-555555555555', now() - interval '10 days', ARRAY['Lịch học', 'Giao diện'], now() - interval '25 days'),
+('t3', 'p1', 'Kiểm thử hồ sơ sinh viên', 'Rà soát luồng cập nhật thông tin và kiểm tra dữ liệu bắt buộc.', 'REVIEW', 'HIGH', 'a4444444-4444-4444-8444-444444444444', now() - interval '2 days', ARRAY['Kiểm thử', 'Hồ sơ'], now() - interval '12 days'),
+('t4', 'p1', 'Tối ưu trang tra cứu học phí', 'Rút ngắn thời gian tải và làm rõ trạng thái các khoản cần thanh toán.', 'IN_PROGRESS', 'HIGH', 'a3333333-3333-4333-8333-333333333333', now() + interval '1 day', ARRAY['Hiệu năng', 'Học phí'], now() - interval '8 days'),
+('t5', 'p1', 'Bổ sung hướng dẫn sử dụng', 'Viết hướng dẫn ngắn cho các chức năng thường dùng của sinh viên.', 'TODO', 'LOW', 'a2222222-2222-4222-8222-222222222222', now() + interval '5 days', ARRAY['Tài liệu', 'Hỗ trợ'], now() - interval '3 days'),
+('t6', 'p2', 'Xác nhận danh sách đơn vị thực tập', 'Đối chiếu thông tin liên hệ và trạng thái tiếp nhận của từng đơn vị.', 'DONE', 'HIGH', 'a1111111-1111-4111-8111-111111111111', now() - interval '12 days', ARRAY['Đơn vị', 'Dữ liệu'], now() - interval '28 days'),
+('t7', 'p2', 'Phê duyệt đề cương thực tập', 'Kiểm tra mục tiêu, phạm vi và kế hoạch thực hiện của sinh viên.', 'IN_PROGRESS', 'HIGH', 'a3333333-3333-4333-8333-333333333333', now() - interval '4 days', ARRAY['Đề cương', 'Phê duyệt'], now() - interval '16 days'),
+('t8', 'p2', 'Tổng hợp nhật ký tuần', 'Chuẩn hóa biểu mẫu và tổng hợp tiến độ thực tập theo từng tuần.', 'REVIEW', 'MEDIUM', 'a4444444-4444-4444-8444-444444444444', now() + interval '2 days', ARRAY['Nhật ký', 'Báo cáo'], now() - interval '9 days'),
+('t9', 'p2', 'Gửi nhắc hạn báo cáo', 'Thiết lập thông báo trước hạn nộp báo cáo cho sinh viên và giảng viên.', 'TODO', 'MEDIUM', 'a5555555-5555-4555-8555-555555555555', now() + interval '7 days', ARRAY['Thông báo', 'Báo cáo'], now() - interval '2 days'),
+('t10', 'p3', 'Chốt số liệu chiến dịch', 'Đối chiếu lượt đăng ký và hoàn thiện bảng số liệu cuối kỳ.', 'DONE', 'HIGH', 'a3333333-3333-4333-8333-333333333333', now() - interval '20 days', ARRAY['Số liệu', 'Tổng kết'], now() - interval '42 days'),
+('t11', 'p3', 'Hoàn thiện bộ ảnh truyền thông', 'Chọn ảnh, chuẩn hóa kích thước và bàn giao thư viện nội dung.', 'DONE', 'MEDIUM', 'a2222222-2222-4222-8222-222222222222', now() - interval '18 days', ARRAY['Truyền thông', 'Hình ảnh'], now() - interval '38 days'),
+('t12', 'p3', 'Lưu trữ báo cáo tổng kết', 'Sắp xếp biên bản, số liệu và báo cáo vào kho tài liệu chung.', 'DONE', 'LOW', 'a4444444-4444-4444-8444-444444444444', now() - interval '14 days', ARRAY['Lưu trữ', 'Báo cáo'], now() - interval '30 days'),
+('t13', 'p4', 'Thiết kế sơ đồ phòng học', 'Hoàn thiện sơ đồ tầng và thông tin sức chứa của từng phòng.', 'DONE', 'MEDIUM', 'a2222222-2222-4222-8222-222222222222', now() - interval '3 days', ARRAY['Thiết kế', 'Phòng học'], now() - interval '18 days'),
+('t14', 'p4', 'Sửa lỗi trùng lịch đặt phòng', 'Ngăn hai yêu cầu được duyệt cùng thời điểm cho một phòng học.', 'IN_PROGRESS', 'HIGH', 'a3333333-3333-4333-8333-333333333333', now() - interval '1 day', ARRAY['Lịch phòng', 'Lỗi'], now() - interval '10 days'),
+('t15', 'p4', 'Kiểm thử thông báo đổi phòng', 'Kiểm tra thông báo tới giảng viên và sinh viên khi phòng học thay đổi.', 'REVIEW', 'HIGH', 'a4444444-4444-4444-8444-444444444444', now() + interval '3 days', ARRAY['Kiểm thử', 'Thông báo'], now() - interval '6 days'),
+('t16', 'p4', 'Chuẩn bị hướng dẫn cho giảng viên', 'Soạn hướng dẫn tạo yêu cầu và theo dõi trạng thái đặt phòng.', 'TODO', 'MEDIUM', 'a5555555-5555-4555-8555-555555555555', now() + interval '10 days', ARRAY['Tài liệu', 'Giảng viên'], now() - interval '1 day');
 
-update tasks
-set completed_at = created_at + interval '4 days'
-where status = 'DONE';
+update tasks set completed_at = case id
+  when 't1' then now() - interval '18 days'
+  when 't2' then now() - interval '11 days'
+  when 't6' then now() - interval '14 days'
+  when 't10' then now() - interval '22 days'
+  when 't11' then now() - interval '19 days'
+  when 't12' then now() - interval '15 days'
+  when 't13' then now() - interval '5 days'
+end where status = 'DONE';
 
 insert into subtasks (id, task_id, title, completed, assignee_id) values
-('st1', 't1', 'Setup native modules', true, 'a1111111-1111-4111-8111-111111111111'),
-('st2', 't1', 'Handle fallback to PIN', true, 'a1111111-1111-4111-8111-111111111111'),
-('st3', 't1', 'UI Feedback animations', true, 'a2222222-2222-4222-8222-222222222222'),
-('st4', 't2', 'Add database indexing', true, 'a4444444-4444-4444-8444-444444444444'),
-('st5', 't2', 'Implement Redis caching', false, 'a4444444-4444-4444-8444-444444444444'),
-('st6', 't4', 'Generate API Keys', true, 'a5555555-5555-4555-8555-555555555555'),
-('st8', 't6', 'Test temperature settings', true, 'a3333333-3333-4333-8333-333333333333'),
-('st9', 't6', 'Create few-shot examples', false, 'a3333333-3333-4333-8333-333333333333'),
-('st10', 't6', 'Validate output quality', false, 'a1111111-1111-4111-8111-111111111111');
+('st1', 't1', 'Kết nối máy chủ xác thực', true, 'a1111111-1111-4111-8111-111111111111'),
+('st2', 't1', 'Kiểm tra đăng xuất trên nhiều thiết bị', true, 'a4444444-4444-4444-8444-444444444444'),
+('st3', 't3', 'Kiểm tra trường thông tin bắt buộc', true, 'a4444444-4444-4444-8444-444444444444'),
+('st4', 't3', 'Kiểm tra tải ảnh đại diện', false, 'a4444444-4444-4444-8444-444444444444'),
+('st5', 't4', 'Đo thời gian phản hồi hiện tại', true, 'a3333333-3333-4333-8333-333333333333'),
+('st6', 't4', 'Tối ưu truy vấn danh sách học phí', false, 'a3333333-3333-4333-8333-333333333333'),
+('st7', 't7', 'Kiểm tra mục tiêu thực tập', true, 'a3333333-3333-4333-8333-333333333333'),
+('st8', 't7', 'Gửi phản hồi cho sinh viên', false, 'a3333333-3333-4333-8333-333333333333'),
+('st9', 't8', 'Chuẩn hóa tên cột dữ liệu', true, 'a4444444-4444-4444-8444-444444444444'),
+('st10', 't8', 'Đối chiếu tuần còn thiếu', false, 'a4444444-4444-4444-8444-444444444444'),
+('st11', 't14', 'Tái hiện trường hợp trùng lịch', true, 'a3333333-3333-4333-8333-333333333333'),
+('st12', 't14', 'Bổ sung kiểm tra trước khi duyệt', false, 'a3333333-3333-4333-8333-333333333333'),
+('st13', 't15', 'Kiểm tra thông báo trên trình duyệt', true, 'a4444444-4444-4444-8444-444444444444'),
+('st14', 't15', 'Kiểm tra nội dung thư điện tử', false, 'a4444444-4444-4444-8444-444444444444'),
+('st15', 't16', 'Chụp ảnh từng bước thao tác', false, 'a5555555-5555-4555-8555-555555555555');
 
 insert into comments (id, task_id, user_id, text, created_at) values
-('c1', 't2', 'a1111111-1111-4111-8111-111111111111', 'Good catch on the index, query time dropped to 200ms.', now() - interval '1 hour'),
-('c2', 't6', 'a3333333-3333-4333-8333-333333333333', 'The model is still struggling with tone consistency.', now() - interval '4 hours'),
-('c3', 't8', 'a2222222-2222-4222-8222-222222222222', 'Tokens màu primary đã cập nhật trên Figma.', now() - interval '2 hours');
+('c1', 't3', 'a4444444-4444-4444-8444-444444444444', 'Đã kiểm tra luồng cập nhật thông tin, còn lỗi ở bước tải ảnh.', now() - interval '5 days'),
+('c2', 't4', 'a3333333-3333-4333-8333-333333333333', 'Thời gian tải đã giảm rõ rệt sau khi tối ưu truy vấn.', now() - interval '2 days'),
+('c3', 't7', 'a1111111-1111-4111-8111-111111111111', 'Ưu tiên xử lý các đề cương đang quá hạn trong hôm nay.', now() - interval '1 day'),
+('c4', 't8', 'a4444444-4444-4444-8444-444444444444', 'Còn hai sinh viên thiếu nhật ký tuần gần nhất.', now() - interval '1 day'),
+('c5', 't14', 'a3333333-3333-4333-8333-333333333333', 'Đã xác định nguyên nhân do kiểm tra lịch chạy sau bước duyệt.', now());
 
 insert into notifications (id, user_id, title, message, type, read, created_at, task_id) values
-('n1', 'a1111111-1111-4111-8111-111111111111', 'Task assigned', 'Bạn được nhắc về Crypto Wallet Integration', 'ASSIGNMENT', false, now() - interval '30 minutes', 't4'),
-('n2', 'a1111111-1111-4111-8111-111111111111', 'Comment', 'Emily đã cập nhật Transaction History API', 'COMMENT', false, now() - interval '1 hour', 't2'),
-('n3', 'a2222222-2222-4222-8222-222222222222', 'Status change', 'Design tokens sync đang In Progress', 'STATUS_CHANGE', true, now() - interval '3 hours', 't8');
+('n1', 'a1111111-1111-4111-8111-111111111111', 'Công việc sắp đến hạn', 'Tối ưu trang tra cứu học phí sẽ đến hạn vào ngày mai.', 'STATUS_CHANGE', false, now() - interval '1 day', 't4'),
+('n2', 'a3333333-3333-4333-8333-333333333333', 'Công việc đã quá hạn', 'Phê duyệt đề cương thực tập cần được cập nhật tiến độ.', 'ASSIGNMENT', false, now() - interval '2 days', 't7'),
+('n3', 'a4444444-4444-4444-8444-444444444444', 'Có bình luận mới', 'Quản trị viên đã phản hồi về công việc phê duyệt đề cương.', 'COMMENT', true, now() - interval '1 day', 't7'),
+('n4', 'a5555555-5555-4555-8555-555555555555', 'Công việc mới được giao', 'Bạn phụ trách chuẩn bị hướng dẫn cho giảng viên.', 'ASSIGNMENT', false, now(), 't16');
 
 alter table tasks enable trigger trg_notify_task_assignment;
 alter table tasks enable trigger trg_notify_task_status_change;
